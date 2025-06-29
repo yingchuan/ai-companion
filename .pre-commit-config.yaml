@@ -1,0 +1,102 @@
+# Pre-commit hooks for ai-companion
+# Install: pip install pre-commit && pre-commit install
+
+repos:
+  # Lua linting and formatting
+  - repo: https://github.com/Koihik/LuaFormatter
+    rev: 1.3.6
+    hooks:
+      - id: luaformatter
+        args: [--indent-width=2, --continuation-indent-width=2]
+
+  - repo: local
+    hooks:
+      # Lua syntax and linting check
+      - id: luacheck
+        name: luacheck
+        entry: luacheck
+        language: system
+        files: \.lua$
+        args: [--config, .luacheckrc]
+        
+      # Lua syntax check
+      - id: lua-syntax
+        name: lua-syntax-check
+        entry: lua
+        language: system
+        files: \.lua$
+        args: [-l]
+        pass_filenames: true
+
+  # Security checks
+  - repo: local
+    hooks:
+      - id: check-secrets
+        name: check-for-secrets
+        entry: bash
+        language: system
+        files: \.(lua|sh|md)$
+        args:
+          - -c
+          - |
+            # Check for real API key patterns
+            if grep -E "(sk-[a-zA-Z0-9]{32,}|claude-[a-zA-Z0-9-]{20,})" "$@"; then
+              echo "❌ Found potential API keys in staged files!"
+              echo "💡 Use environment variables instead: export OPENAI_API_KEY='your-key'"
+              exit 1
+            fi
+            
+            # Check for hardcoded secrets
+            if grep -E "(password|secret|token)\s*=\s*['\"][^'\"]{10,}" "$@" | grep -v -E "(your-|example-|test-|dummy-|placeholder)"; then
+              echo "⚠️ Found potential hardcoded secrets in staged files!"
+              exit 1
+            fi
+            
+            echo "✅ No secrets found in staged files"
+        pass_filenames: true
+
+  # General file checks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      # Basic file checks
+      - id: trailing-whitespace
+        exclude: \.md$
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-json
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: [--maxkb=1000]
+      
+      # Shell script checks
+      - id: check-executables-have-shebangs
+      - id: check-shebang-scripts-are-executable
+
+  # Markdown checks
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.37.0
+    hooks:
+      - id: markdownlint
+        args: [--config, .markdownlint.yaml]
+
+  # Additional Lua checks
+  - repo: local
+    hooks:
+      # Check for vim globals
+      - id: lua-vim-check
+        name: lua-vim-globals-check
+        entry: bash
+        language: system
+        files: \.lua$
+        args:
+          - -c
+          - |
+            # Check for proper vim API usage
+            if grep -n "vim\." "$@" | grep -v -E "(vim\.api|vim\.fn|vim\.cmd|vim\.keymap|vim\.notify|vim\.log|vim\.schedule|vim\.defer_fn|vim\.loop|vim\.uv|vim\.tbl_|vim\.split|vim\.inspect|vim\.deepcopy|vim\.[bowgt]o?)\."; then
+              echo "⚠️ Found potentially incorrect vim API usage:"
+              grep -n "vim\." "$@" | grep -v -E "(vim\.api|vim\.fn|vim\.cmd|vim\.keymap|vim\.notify|vim\.log|vim\.schedule|vim\.defer_fn|vim\.loop|vim\.uv|vim\.tbl_|vim\.split|vim\.inspect|vim\.deepcopy|vim\.[bowgt]o?)\."
+              echo "💡 Use specific vim APIs like vim.api, vim.fn, etc."
+            fi
+        pass_filenames: true
