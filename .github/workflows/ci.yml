@@ -72,9 +72,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Check for secrets
+      - name: Check for hardcoded secrets
         run: |
-          if grep -r "api[_-]key\s*=" . --include="*.lua" --include="*.md" | grep -v "your-api-key"; then
-            echo "⚠️ Found potential API keys in code"
+          # Check for actual API key patterns (not examples)
+          if grep -r -E "(sk-[a-zA-Z0-9]{32,}|claude-[a-zA-Z0-9-]+)" . --include="*.lua" --include="*.sh" --include="*.md"; then
+            echo "❌ Found actual API keys in code!"
             exit 1
           fi
+          
+          # Check for other secret patterns
+          if grep -r -E "(password|secret|token)\s*=\s*['\"][^'\"]{10,}" . --include="*.lua" --include="*.sh" | grep -v "your-"; then
+            echo "⚠️ Found potential hardcoded secrets"
+            exit 1
+          fi
+          
+          echo "✅ No hardcoded secrets found"
