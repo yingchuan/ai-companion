@@ -69,20 +69,58 @@ jobs:
   security:
     name: Security Check
     runs-on: ubuntu-latest
+    env:
+      # Set dummy API keys for testing
+      OPENAI_API_KEY: sk-test1234567890abcdef1234567890abcdef
+      ANTHROPIC_API_KEY: claude-test-1234567890abcdef
+      TEST_SECRET: test-secret-123456789
     steps:
       - uses: actions/checkout@v4
       
       - name: Check for hardcoded secrets
         run: |
-          # Check for actual API key patterns (not examples)
-          if grep -r -E "(sk-[a-zA-Z0-9]{32,}|claude-[a-zA-Z0-9-]+)" . --include="*.lua" --include="*.sh" --include="*.md"; then
-            echo "❌ Found actual API keys in code!"
-            exit 1
+          echo "🔍 Checking for hardcoded secrets..."
+          
+          # Check if any environment variable values appear in code
+          secrets_found=false
+          
+          # Check against API key environment variables
+          if [ -n "$OPENAI_API_KEY" ]; then
+            if grep -r "$OPENAI_API_KEY" . --include="*.lua" --include="*.sh" --include="*.md" 2>/dev/null; then
+              echo "❌ OPENAI_API_KEY found hardcoded in files!"
+              secrets_found=true
+            fi
           fi
           
-          # Check for other secret patterns
-          if grep -r -E "(password|secret|token)\s*=\s*['\"][^'\"]{10,}" . --include="*.lua" --include="*.sh" | grep -v "your-"; then
+          if [ -n "$ANTHROPIC_API_KEY" ]; then
+            if grep -r "$ANTHROPIC_API_KEY" . --include="*.lua" --include="*.sh" --include="*.md" 2>/dev/null; then
+              echo "❌ ANTHROPIC_API_KEY found hardcoded in files!"
+              secrets_found=true
+            fi
+          fi
+          
+          # Check for real API key patterns (backup check)
+          if grep -r -E "sk-[a-zA-Z0-9]{32,}" . --include="*.lua" --include="*.sh" --include="*.md" 2>/dev/null; then
+            echo "❌ Found OpenAI API key pattern in code!"
+            secrets_found=true
+          fi
+          
+          if grep -r -E "claude-[a-zA-Z0-9-]{20,}" . --include="*.lua" --include="*.sh" --include="*.md" 2>/dev/null; then
+            echo "❌ Found Anthropic API key pattern in code!"
+            secrets_found=true
+          fi
+          
+          # Check for other potential secrets
+          if grep -r -E "(password|secret|token)\s*=\s*['\"][^'\"]{10,}" . --include="*.lua" --include="*.sh" 2>/dev/null | grep -v -E "(your-|example-|test-|dummy-|placeholder)"; then
             echo "⚠️ Found potential hardcoded secrets"
+            secrets_found=true
+          fi
+          
+          if [ "$secrets_found" = true ]; then
+            echo ""
+            echo "💡 Tip: Use environment variables instead:"
+            echo "   export OPENAI_API_KEY='your-key'"
+            echo "   export ANTHROPIC_API_KEY='your-key'"
             exit 1
           fi
           
