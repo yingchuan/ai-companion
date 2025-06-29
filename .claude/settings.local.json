@@ -7,7 +7,9 @@
       "Bash(command -v:*)",
       "Bash(/dev/null)",
       "Bash(luacheck:*)",
-      "Bash(gh api:*)"
+      "Bash(gh api:*)",
+      "Bash(awk:*)",
+      "Bash(grep:*)"
     ],
     "deny": []
   }
