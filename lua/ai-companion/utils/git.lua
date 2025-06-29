@@ -27,12 +27,9 @@ end
 
 -- 提供 Git 初始化
 function M.offer_git_init()
-  local choice = vim.fn.confirm(
-    string.format("工作目錄 %s 不是 Git 倉庫，是否初始化？", M.workspace_dir),
-    "&是\n&否", 2
-  )
+  local response = vim.fn.input(string.format("Workspace '%s' is not a Git repository. Initialize Git? (y/N): ", M.workspace_dir))
 
-  if choice == 1 then
+  if response:lower():match("^y") then
     M.init_git_repo()
   end
 end
@@ -84,7 +81,7 @@ function M.install_pre_commit_hook()
   if vim.fn.filereadable(hook_path) == 1 then
     local backup_path = hook_path .. ".backup." .. os.date("%Y%m%d_%H%M%S")
     vim.fn.rename(hook_path, backup_path)
-    vim.notify("已備份現有 pre-commit hook", vim.log.levels.INFO)
+    vim.notify("Existing pre-commit hook backed up", vim.log.levels.INFO)
   end
 
   -- 寫入新 hook
@@ -199,7 +196,7 @@ function M.manual_rag_update()
     return
   end
 
-  vim.notify("🔄 手動更新 AI 知識庫...", vim.log.levels.INFO)
+  vim.notify("🔄 Manually updating AI knowledge base...", vim.log.levels.INFO)
 
   local cmd = string.format("cd '%s' && aichat --rag workspace-rag --rebuild", M.workspace_dir)
 

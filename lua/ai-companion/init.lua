@@ -73,7 +73,7 @@ function M.validate_config()
 
   -- 檢查 aichat 可用性
   if vim.fn.executable("aichat") == 0 then
-    vim.notify("警告: aichat 未找到，請先安裝", vim.log.levels.WARN)
+    vim.notify("Warning: aichat not found, please install it first", vim.log.levels.WARN)
   end
 end
 

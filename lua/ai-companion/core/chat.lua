@@ -188,12 +188,12 @@ end
 -- 歷史記錄導航
 function M.previous_input()
   -- TODO: 實現輸入歷史向上導航
-  vim.notify("功能開發中", vim.log.levels.INFO)
+  vim.notify("Feature under development", vim.log.levels.INFO)
 end
 
 function M.next_input()
   -- TODO: 實現輸入歷史向下導航
-  vim.notify("功能開發中", vim.log.levels.INFO)
+  vim.notify("Feature under development", vim.log.levels.INFO)
 end
 
 -- 生成對話 ID

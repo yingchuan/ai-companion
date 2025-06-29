@@ -282,14 +282,13 @@ end
 
 -- 重置配置
 function M.reset_config()
-  local choice = vim.fn.confirm(
-    "確定要重置 aichat 配置嗎？這將覆蓋現有配置。",
-    "&是\n&否", 2
-  )
+  local response = vim.fn.input("Reset aichat configuration? This will overwrite existing config. (y/N): ")
 
-  if choice == 1 then
+  if response:lower():match("^y") then
     M.setup_config(M.plugin_config)
-    vim.notify("✅ aichat 配置已重置", vim.log.levels.INFO)
+    vim.notify("✅ aichat configuration reset successfully", vim.log.levels.INFO)
+  else
+    vim.notify("Cancelled", vim.log.levels.INFO)
   end
 end
 

@@ -213,7 +213,7 @@ function M.safe_call(func, ...)
   if ok then
     return result
   else
-    vim.notify("錯誤: " .. tostring(result), vim.log.levels.ERROR)
+    vim.notify("Error: " .. tostring(result), vim.log.levels.ERROR)
     return nil
   end
 end
