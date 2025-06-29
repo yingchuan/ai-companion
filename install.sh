@@ -71,42 +71,42 @@ command_exists() {
 # 檢查前置條件
 check_prerequisites() {
     print_info "檢查前置條件..."
-    
+
     # 檢查 Neovim
     if ! command_exists nvim; then
         print_error "未找到 Neovim，請先安裝 Neovim"
         exit 1
     fi
-    
+
     # 檢查 Neovim 版本
     nvim_version=$(nvim --version | head -n1 | grep -o 'v[0-9]\+\.[0-9]\+\.[0-9]\+')
     print_success "Neovim 版本: $nvim_version"
-    
+
     # 檢查 Git
     if ! command_exists git; then
         print_error "未找到 Git，請先安裝 Git"
         exit 1
     fi
-    
+
     # 檢查 Cargo（用於安裝 aichat）
     if ! command_exists cargo; then
         print_warning "未找到 Cargo，將嘗試其他方式安裝 aichat"
     fi
-    
+
     print_success "前置條件檢查完成"
 }
 
 # 安裝 aichat
 install_aichat() {
     print_info "檢查 aichat..."
-    
+
     if command_exists aichat; then
         print_success "aichat 已安裝"
         return
     fi
-    
+
     print_info "安裝 aichat..."
-    
+
     # 嘗試使用 Cargo 安裝
     if command_exists cargo; then
         print_info "使用 Cargo 安裝 aichat..."
@@ -114,7 +114,7 @@ install_aichat() {
         print_success "aichat 安裝完成"
         return
     fi
-    
+
     # 嘗試使用 Homebrew（macOS）
     if [[ "$OSTYPE" == "darwin"* ]] && command_exists brew; then
         print_info "使用 Homebrew 安裝 aichat..."
@@ -122,7 +122,7 @@ install_aichat() {
         print_success "aichat 安裝完成"
         return
     fi
-    
+
     # 手動安裝提示
     print_error "無法自動安裝 aichat，請手動安裝："
     echo "  1. 安裝 Rust: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh"
@@ -134,10 +134,10 @@ install_aichat() {
 # 檢查 LazyVim
 check_lazyvim() {
     print_info "檢查 LazyVim 配置..."
-    
+
     local config_dir="$HOME/.config/nvim"
     local lazy_file="$config_dir/lua/config/lazy.lua"
-    
+
     if [[ ! -f "$lazy_file" ]]; then
         print_warning "未檢測到 LazyVim 配置"
         print_info "請確保你使用的是 LazyVim 或兼容的配置"
@@ -149,18 +149,18 @@ check_lazyvim() {
 # 安裝插件
 install_plugin() {
     print_info "安裝 AI 工作夥伴插件..."
-    
+
     local config_dir="$HOME/.config/nvim"
     local plugin_dir="$config_dir/lua/ai-companion"
     local plugins_dir="$config_dir/lua/plugins"
-    
+
     # 創建必要目錄
     mkdir -p "$plugin_dir"
     mkdir -p "$plugins_dir"
-    
+
     # 下載插件文件（這裡假設從 GitHub 下載）
     print_info "下載插件文件..."
-    
+
     # 從 GitHub 倉庫克隆
     if [[ ! -d "$plugin_dir/.git" ]]; then
       git clone https://github.com/yingchuan/ai-companion.git "$plugin_dir"
@@ -168,8 +168,8 @@ install_plugin() {
     else
       print_success "插件目錄已存在，跳過下載"
     fi
-    
-    
+
+
     # 創建插件配置文件
     local config_file="$plugins_dir/ai-companion.lua"
     if [[ ! -f "$config_file" ]]; then
@@ -207,12 +207,12 @@ EOF
 # 設置工作目錄
 setup_workspace() {
     print_info "設置工作目錄..."
-    
+
     local config_file="$HOME/.config/nvim/lua/plugins/ai-companion.lua"
     local workspace_dir="$HOME/workspace"  # 默認值
     local change_dir="N"
     local new_workspace_dir=""
-    
+
     # 優先使用命令行參數
     if [[ -n "$WORKSPACE_DIR" ]]; then
         workspace_dir=$(eval echo "$WORKSPACE_DIR")
@@ -226,7 +226,7 @@ setup_workspace() {
                 print_info "從配置文件中找到工作目錄: $workspace_dir"
             fi
         fi
-        
+
         # 如果不是非交互模式，詢問用戶
         if [[ "$NON_INTERACTIVE" != true ]]; then
             echo ""
@@ -239,14 +239,14 @@ setup_workspace() {
             fi
         fi
     fi
-    
+
     if [[ ! -d "$workspace_dir" ]]; then
         mkdir -p "$workspace_dir"
         print_success "工作目錄已創建: $workspace_dir"
     else
         print_success "工作目錄已存在: $workspace_dir"
     fi
-    
+
     # 如果用戶修改了工作目錄，更新配置文件
     if [[ "$change_dir" =~ ^[Yy]$ ]] && [[ -f "$config_file" ]]; then
         print_info "更新配置文件中的工作目錄..."
@@ -257,14 +257,14 @@ setup_workspace() {
         rm -f "$config_file.tmp"
         print_success "配置文件已更新"
     fi
-    
+
     # 初始化 Git 倉庫（可選）
     if [[ ! -d "$workspace_dir/.git" ]]; then
         local init_git="N"
         if [[ "$NON_INTERACTIVE" != true ]]; then
             read -p "是否初始化 Git 倉庫？(y/N): " init_git
         fi
-        
+
         if [[ "$init_git" =~ ^[Yy]$ ]]; then
             cd "$workspace_dir"
             git init
@@ -283,19 +283,19 @@ setup_workspace() {
 # 檢查 API 密鑰
 check_api_keys() {
     print_info "檢查 API 密鑰配置..."
-    
+
     local needs_setup=false
-    
+
     if [[ -z "$OPENAI_API_KEY" ]]; then
         print_warning "未設置 OPENAI_API_KEY 環境變量"
         needs_setup=true
     fi
-    
+
     if [[ -z "$ANTHROPIC_API_KEY" ]]; then
         print_warning "未設置 ANTHROPIC_API_KEY 環境變量"
         needs_setup=true
     fi
-    
+
     if [[ "$needs_setup" == true ]]; then
         print_info "請在 shell 配置文件中設置 API 密鑰："
         echo ""
@@ -336,7 +336,7 @@ main() {
     echo "   AI 工作夥伴插件安裝程序"
     echo "=========================================="
     echo ""
-    
+
     check_prerequisites
     install_aichat
     check_lazyvim
