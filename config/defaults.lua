@@ -4,7 +4,7 @@ local M = {}
 M.plugin_defaults = {
   -- 工作空間配置
   workspace_dir = "~/workspace",
-  
+
   -- AI 配置
   ai_config = {
     embedding_model = "openai:text-embedding-3-small",
@@ -13,7 +13,7 @@ M.plugin_defaults = {
     max_tokens = 4000,
     timeout = 30000, -- 30 秒超時
   },
-  
+
   -- Git 整合配置
   git_integration = {
     enabled = true,
@@ -21,7 +21,7 @@ M.plugin_defaults = {
     auto_commit = false,
     commit_message_template = "AI Companion: Auto-update knowledge base",
   },
-  
+
   -- UI 配置
   ui = {
     chat_height = 15,
@@ -31,7 +31,7 @@ M.plugin_defaults = {
     show_timestamps = true,
     theme = "default",
   },
-  
+
   -- 文件組織配置
   file_organization = {
     auto_categorize = true,
@@ -39,7 +39,7 @@ M.plugin_defaults = {
     use_subdirectories = true,
     max_files_per_dir = 100,
   },
-  
+
   -- 搜索配置
   search = {
     fuzzy_threshold = 0.8,
@@ -47,7 +47,7 @@ M.plugin_defaults = {
     include_archived = false,
     search_in_content = true,
   },
-  
+
   -- 通知配置
   notifications = {
     enabled = true,
@@ -56,7 +56,7 @@ M.plugin_defaults = {
     show_errors = true,
     auto_hide_delay = 3000, -- 3 秒後自動隱藏
   },
-  
+
   -- 性能配置
   performance = {
     async_processing = true,
@@ -77,7 +77,7 @@ M.model_presets = {
     temperature = 0.7,
     max_tokens = 4000,
   },
-  
+
   -- Anthropic 配置
   anthropic = {
     embedding_model = "openai:text-embedding-3-small", -- Anthropic 沒有 embedding 模型
@@ -85,15 +85,15 @@ M.model_presets = {
     temperature = 0.7,
     max_tokens = 4000,
   },
-  
+
   -- 本地模型配置
-  local = {
+  ["local"] = {
     embedding_model = "local:sentence-transformers/all-MiniLM-L6-v2",
     generation_model = "local:llama2",
     temperature = 0.8,
     max_tokens = 2000,
   },
-  
+
   -- 混合配置（OpenAI embedding + Anthropic generation）
   hybrid = {
     embedding_model = "openai:text-embedding-3-small",
@@ -127,7 +127,7 @@ M.workflow_templates = {
       notes = "note-{date}-{category}",
     }
   },
-  
+
   -- 研究工作流
   research = {
     directories = {
@@ -149,12 +149,12 @@ M.workflow_templates = {
       ideas = "idea-{date}-{topic}",
     }
   },
-  
+
   -- 通用工作流
   general = {
     directories = {
       "tasks",
-      "meetings", 
+      "meetings",
       "notes",
       "discussions",
       "reviews",
@@ -177,7 +177,7 @@ M.keymap_defaults = {
   quick_note = "<leader>an",
   quick_task = "<leader>at",
   search_workspace = "<leader>as",
-  
+
   -- 對話窗口內
   chat = {
     send_message = "<CR>",
@@ -187,14 +187,14 @@ M.keymap_defaults = {
     history_up = "<Up>",
     history_down = "<Down>",
   },
-  
+
   -- 文件操作
   files = {
     search_files = "<leader>fn",
     search_content = "<leader>sn",
     recent_files = "<leader>fr",
   },
-  
+
   -- 管理功能
   admin = {
     show_status = "<leader>as",
@@ -212,14 +212,14 @@ M.prompt_templates = {
     organizer = "你是內容整理專家，擅長結構化信息和知識管理。",
     planner = "你是項目規劃專家，擅長任務分解和時間管理。",
   },
-  
+
   -- 任務模板
   task_templates = {
     simple = "創建任務：{title}",
     detailed = "創建詳細任務：{title}\n描述：{description}\n截止日期：{deadline}\n優先級：{priority}",
     project = "創建項目任務：{title}\n所屬項目：{project}\n依賴任務：{dependencies}",
   },
-  
+
   -- 會議模板
   meeting_templates = {
     standup = "每日站會 - {date}\n參與者：{participants}\n議題：{agenda}",
@@ -237,15 +237,15 @@ M.validation_rules = {
       return value and value ~= ""
     end
   },
-  
+
   ai_config = {
     type = "table",
     required = true,
     fields = {
       embedding_model = { type = "string", required = true },
       generation_model = { type = "string", required = true },
-      temperature = { 
-        type = "number", 
+      temperature = {
+        type = "number",
         required = false,
         validator = function(value)
           return value >= 0 and value <= 2
@@ -253,7 +253,7 @@ M.validation_rules = {
       },
     }
   },
-  
+
   ui = {
     type = "table",
     required = false,
@@ -265,7 +265,7 @@ M.validation_rules = {
         end
       },
       chat_width = {
-        type = "number", 
+        type = "number",
         validator = function(value)
           return value > 40 and value < 200
         end
@@ -317,7 +317,7 @@ M.help_docs = {
    - <leader>fn: 搜索文件
    - <leader>sn: 搜索內容
 ]],
-  
+
   advanced_usage = [[
 🔧 高級使用技巧
 

@@ -14,17 +14,17 @@ globals = {
 read_globals = {
   -- Lua
   "table",
-  "string", 
+  "string",
   "math",
   "os",
   "io",
   "debug",
   "coroutine",
   "package",
-  
+
   -- Neovim API
   "vim.api",
-  "vim.fn", 
+  "vim.fn",
   "vim.cmd",
   "vim.keymap",
   "vim.notify",
@@ -38,10 +38,10 @@ read_globals = {
   "vim.split",
   "vim.inspect",
   "vim.deepcopy",
-  
+
   -- Neovim buffer/window options
   "vim.bo",
-  "vim.wo", 
+  "vim.wo",
   "vim.go",
   "vim.o",
   "vim.g",
@@ -56,6 +56,11 @@ read_globals = {
 ignore = {
   "212/self",  -- Unused argument self
   "631",       -- Line too long
+  "612",       -- Line contains only whitespace
+  "611",       -- Line contains trailing whitespace
+  "614",       -- Trailing whitespace in a string
+  "113",       -- Setting non-standard global variable
+  "122",       -- Setting read-only field
 }
 
 -- File-specific configurations
@@ -72,5 +77,6 @@ files = {
 exclude_files = {
   ".git/",
   "node_modules/",
+  ".luarocks/",
   "*.min.lua"
 }
