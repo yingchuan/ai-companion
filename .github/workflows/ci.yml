@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lua-check:
+    name: Lua Lint & Format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install Lua
+        uses: leafo/gh-actions-lua@v10
+        with:
+          luaVersion: "5.1"
+      
+      - name: Install Luarocks
+        uses: leafo/gh-actions-luarocks@v4
+      
+      - name: Install luacheck
+        run: luarocks install luacheck
+      
+      - name: Lint Lua files
+        run: |
+          find . -name "*.lua" -not -path "./.git/*" | xargs luacheck --config .luacheckrc
+      
+      - name: Check Lua syntax
+        run: |
+          find . -name "*.lua" -not -path "./.git/*" -exec lua -l {} \;
+
+  install-test:
+    name: Installation Test
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Test install script help
+        run: bash install.sh --help
+      
+      - name: Test non-interactive install
+        run: |
+          mkdir -p ~/.config/nvim/lua/plugins
+          bash install.sh --workspace-dir /tmp/test-workspace --non-interactive
+          [ -d "/tmp/test-workspace" ] && echo "✅ Workspace created"
+
+  docs:
+    name: Documentation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Check README links
+        uses: gaurav-nelson/github-action-markdown-link-check@v1
+        with:
+          use-quiet-mode: 'yes'
+      
+      - name: Validate Lua examples
+        run: |
+          # Extract and validate Lua code blocks from README
+          awk '/```lua/,/```/' README.md | grep -v '```' | lua -c
+
+  security:
+    name: Security Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Check for secrets
+        run: |
+          if grep -r "api[_-]key\s*=" . --include="*.lua" --include="*.md" | grep -v "your-api-key"; then
+            echo "⚠️ Found potential API keys in code"
+            exit 1
+          fi
