@@ -74,7 +74,27 @@ return {
 # 自動安裝（推薦）
 curl -sSL https://raw.githubusercontent.com/yingchuan/ai-companion/main/install.sh | bash
 
-# 或手動克隆到 Neovim 配置目錄
+# 或下載腳本後執行（可自定義選項）
+curl -sSL https://raw.githubusercontent.com/yingchuan/ai-companion/main/install.sh -o install.sh
+chmod +x install.sh
+
+# 指定自定義工作目錄
+./install.sh --workspace-dir ~/my-workspace
+
+# 非交互模式安裝（使用默認設置）
+./install.sh --non-interactive
+
+# 同時指定工作目錄和非交互模式
+./install.sh --workspace-dir ~/projects/notes --non-interactive
+
+# 查看所有選項
+./install.sh --help
+```
+
+#### 方法三：手動安裝
+
+```bash
+# 手動克隆到 Neovim 配置目錄
 git clone https://github.com/yingchuan/ai-companion.git ~/.config/nvim/lua/ai-companion
 ```
 

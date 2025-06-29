@@ -2,8 +2,42 @@
 
 # AI 工作夥伴插件安裝腳本
 # 用法: curl -sSL https://raw.githubusercontent.com/yingchuan/ai-companion/main/install.sh | bash
+# 或: ./install.sh [--workspace-dir <path>] [--non-interactive]
 
 set -e
+
+# 命令行參數
+WORKSPACE_DIR=""
+NON_INTERACTIVE=false
+
+# 解析命令行參數
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --workspace-dir)
+            WORKSPACE_DIR="$2"
+            shift 2
+            ;;
+        --non-interactive)
+            NON_INTERACTIVE=true
+            shift
+            ;;
+        -h|--help)
+            echo "AI 工作夥伴插件安裝腳本"
+            echo ""
+            echo "用法: $0 [選項]"
+            echo ""
+            echo "選項:"
+            echo "  --workspace-dir <path>  指定工作目錄路徑"
+            echo "  --non-interactive       非交互模式，使用默認設置"
+            echo "  -h, --help             顯示此幫助信息"
+            exit 0
+            ;;
+        *)
+            print_error "未知參數: $1"
+            exit 1
+            ;;
+    esac
+done
 
 # 顏色定義
 RED='\033[0;31m'
@@ -174,7 +208,37 @@ EOF
 setup_workspace() {
     print_info "設置工作目錄..."
     
-    local workspace_dir="$HOME/workspace"
+    local config_file="$HOME/.config/nvim/lua/plugins/ai-companion.lua"
+    local workspace_dir="$HOME/workspace"  # 默認值
+    local change_dir="N"
+    local new_workspace_dir=""
+    
+    # 優先使用命令行參數
+    if [[ -n "$WORKSPACE_DIR" ]]; then
+        workspace_dir=$(eval echo "$WORKSPACE_DIR")
+        print_info "使用命令行指定的工作目錄: $workspace_dir"
+    else
+        # 嘗試從配置文件中讀取工作目錄
+        if [[ -f "$config_file" ]]; then
+            local configured_dir=$(grep -o 'workspace_dir = "[^"]*"' "$config_file" 2>/dev/null | cut -d'"' -f2)
+            if [[ -n "$configured_dir" ]]; then
+                workspace_dir=$(eval echo "$configured_dir")
+                print_info "從配置文件中找到工作目錄: $workspace_dir"
+            fi
+        fi
+        
+        # 如果不是非交互模式，詢問用戶
+        if [[ "$NON_INTERACTIVE" != true ]]; then
+            echo ""
+            read -p "工作目錄設置為: $workspace_dir，是否更改？(y/N): " change_dir
+            if [[ "$change_dir" =~ ^[Yy]$ ]]; then
+                read -p "請輸入新的工作目錄路徑: " new_workspace_dir
+                if [[ -n "$new_workspace_dir" ]]; then
+                    workspace_dir=$(eval echo "$new_workspace_dir")
+                fi
+            fi
+        fi
+    fi
     
     if [[ ! -d "$workspace_dir" ]]; then
         mkdir -p "$workspace_dir"
@@ -183,9 +247,24 @@ setup_workspace() {
         print_success "工作目錄已存在: $workspace_dir"
     fi
     
+    # 如果用戶修改了工作目錄，更新配置文件
+    if [[ "$change_dir" =~ ^[Yy]$ ]] && [[ -f "$config_file" ]]; then
+        print_info "更新配置文件中的工作目錄..."
+        # 創建備份
+        cp "$config_file" "$config_file.backup.$(date +%Y%m%d_%H%M%S)"
+        # 更新配置
+        sed -i.tmp "s|workspace_dir = \"[^\"]*\"|workspace_dir = \"$new_workspace_dir\"|g" "$config_file"
+        rm -f "$config_file.tmp"
+        print_success "配置文件已更新"
+    fi
+    
     # 初始化 Git 倉庫（可選）
     if [[ ! -d "$workspace_dir/.git" ]]; then
-        read -p "是否初始化 Git 倉庫？(y/N): " init_git
+        local init_git="N"
+        if [[ "$NON_INTERACTIVE" != true ]]; then
+            read -p "是否初始化 Git 倉庫？(y/N): " init_git
+        fi
+        
         if [[ "$init_git" =~ ^[Yy]$ ]]; then
             cd "$workspace_dir"
             git init
@@ -195,6 +274,8 @@ setup_workspace() {
             git add README.md
             git commit -m "Initial commit: AI companion workspace"
             print_success "Git 倉庫已初始化"
+        elif [[ "$NON_INTERACTIVE" == true ]]; then
+            print_info "非交互模式：跳過 Git 倉庫初始化"
         fi
     fi
 }
