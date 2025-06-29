@@ -90,7 +90,7 @@ end
 function M.get_relative_time(timestamp)
   local now = os.time()
   local diff = now - timestamp
-  
+
   if diff < 60 then
     return "剛才"
   elseif diff < 3600 then
@@ -114,13 +114,13 @@ function M.extract_keywords(text)
     ["這"] = true, ["那"] = true, ["這個"] = true, ["那個"] = true, ["可以"] = true,
     ["能夠"] = true, ["應該"] = true, ["需要"] = true, ["想要"] = true, ["希望"] = true,
   }
-  
+
   for word in text:gmatch("[%w]+") do
     if #word > 1 and not common_words[word] then
       table.insert(keywords, word)
     end
   end
-  
+
   return keywords
 end
 
@@ -129,13 +129,13 @@ function M.summarize_text(text, max_length)
   if #text <= max_length then
     return text
   end
-  
+
   local summary = text:sub(1, max_length)
   local last_space = summary:find(" [^ ]*$")
   if last_space then
     summary = summary:sub(1, last_space - 1)
   end
-  
+
   return summary .. "..."
 end
 
@@ -153,22 +153,22 @@ function M.normalize_path(path)
   if M.starts_with(path, "~/") then
     path = vim.fn.expand("~") .. path:sub(2)
   end
-  
+
   -- 移除重複的斜杠
   path = path:gsub("//+", "/")
-  
+
   -- 移除尾部斜杠（除非是根目錄）
   if path ~= "/" and M.ends_with(path, "/") then
     path = path:sub(1, -2)
   end
-  
+
   return path
 end
 
 function M.join_paths(...)
   local paths = {...}
   local result = paths[1] or ""
-  
+
   for i = 2, #paths do
     local path = paths[i]
     if path and path ~= "" then
@@ -181,7 +181,7 @@ function M.join_paths(...)
       result = result .. path
     end
   end
-  
+
   return M.normalize_path(result)
 end
 
@@ -198,12 +198,12 @@ function M.generate_short_id(length)
   length = length or 8
   local chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
   local result = ""
-  
-  for i = 1, length do
+
+  for _ = 1, length do
     local index = math.random(1, #chars)
     result = result .. chars:sub(index, index)
   end
-  
+
   return result
 end
 
@@ -221,7 +221,7 @@ end
 function M.with_timeout(func, timeout_ms, callback)
   local timer = vim.loop.new_timer()
   local completed = false
-  
+
   timer:start(timeout_ms, 0, function()
     if not completed then
       completed = true
@@ -229,7 +229,7 @@ function M.with_timeout(func, timeout_ms, callback)
       callback("timeout")
     end
   end)
-  
+
   M.safe_call(function()
     local result = func()
     if not completed then
@@ -243,7 +243,7 @@ end
 -- 配置工具
 function M.deep_merge(base, override)
   local result = vim.deepcopy(base)
-  
+
   for key, value in pairs(override) do
     if type(value) == "table" and type(result[key]) == "table" then
       result[key] = M.deep_merge(result[key], value)
@@ -251,30 +251,30 @@ function M.deep_merge(base, override)
       result[key] = value
     end
   end
-  
+
   return result
 end
 
 function M.validate_config(config, schema)
   local errors = {}
-  
+
   for key, spec in pairs(schema) do
     local value = config[key]
-    
+
     if spec.required and value == nil then
       table.insert(errors, string.format("缺少必需配置項: %s", key))
     elseif value ~= nil then
       if spec.type and type(value) ~= spec.type then
-        table.insert(errors, string.format("配置項 %s 類型錯誤，期望 %s，實際 %s", 
+        table.insert(errors, string.format("配置項 %s 類型錯誤，期望 %s，實際 %s",
           key, spec.type, type(value)))
       end
-      
+
       if spec.validator and not spec.validator(value) then
         table.insert(errors, string.format("配置項 %s 驗證失敗", key))
       end
     end
   end
-  
+
   return #errors == 0, errors
 end
 
@@ -292,7 +292,7 @@ function M.measure_time(func, name)
   local result = func()
   local end_time = vim.loop.hrtime()
   local duration = (end_time - start_time) / 1000000 -- 轉換為毫秒
-  
+
   print(string.format("%s 執行時間: %.2f ms", name, duration))
   return result
 end
@@ -305,7 +305,7 @@ function M.create_cache(max_size)
     access_order = {},
     max_size = max_size
   }
-  
+
   function cache:get(key)
     local value = self.data[key]
     if value then
@@ -315,13 +315,13 @@ function M.create_cache(max_size)
     end
     return nil
   end
-  
+
   function cache:set(key, value)
     self.data[key] = value
     self:_update_access(key)
     self:_cleanup()
   end
-  
+
   function cache:_update_access(key)
     -- 移除舊的訪問記錄
     for i, k in ipairs(self.access_order) do
@@ -333,14 +333,14 @@ function M.create_cache(max_size)
     -- 添加到末尾（最新訪問）
     table.insert(self.access_order, key)
   end
-  
+
   function cache:_cleanup()
     while #self.access_order > self.max_size do
       local old_key = table.remove(self.access_order, 1)
       self.data[old_key] = nil
     end
   end
-  
+
   return cache
 end
 
