@@ -10,29 +10,29 @@ M.config_paths = {
 -- 設置 aichat 配置
 function M.setup_config(plugin_config)
   M.plugin_config = plugin_config
-  
+
   -- 確保配置目錄存在
   vim.fn.mkdir(M.config_paths.config_dir, "p")
-  
+
   -- 設置主配置
   M.setup_main_config()
-  
+
   -- 設置角色配置
   M.setup_roles_config()
-  
+
   vim.notify("✅ aichat 配置已更新", vim.log.levels.INFO)
 end
 
 -- 設置主配置文件
 function M.setup_main_config()
   local config_content = M.generate_main_config()
-  
+
   -- 備份現有配置
   if vim.fn.filereadable(M.config_paths.config_file) == 1 then
     local backup_path = M.config_paths.config_file .. ".backup." .. os.date("%Y%m%d_%H%M%S")
     vim.fn.rename(M.config_paths.config_file, backup_path)
   end
-  
+
   -- 寫入新配置
   vim.fn.writefile(vim.split(config_content, '\n'), M.config_paths.config_file)
 end
@@ -40,7 +40,7 @@ end
 -- 生成主配置內容
 function M.generate_main_config()
   local ai_config = M.plugin_config.ai_config
-  
+
   return string.format([[
 # AI Companion - Auto-generated aichat configuration
 
@@ -70,7 +70,7 @@ document_loaders:
 
 # 角色配置文件
 roles_file: %s
-]], 
+]],
   ai_config.generation_model,
   ai_config.temperature,
   ai_config.embedding_model,
@@ -160,37 +160,37 @@ end
 -- 驗證配置
 function M.validate_config()
   local issues = {}
-  
+
   -- 檢查配置文件是否存在
   if vim.fn.filereadable(M.config_paths.config_file) == 0 then
     table.insert(issues, "主配置文件不存在")
   end
-  
+
   if vim.fn.filereadable(M.config_paths.roles_file) == 0 then
     table.insert(issues, "角色配置文件不存在")
   end
-  
+
   -- 檢查 aichat 可執行性
   if vim.fn.executable('aichat') == 0 then
     table.insert(issues, "aichat 命令不可用")
   end
-  
+
   return issues
 end
 
 -- 測試配置
 function M.test_config()
   local issues = M.validate_config()
-  
+
   if #issues > 0 then
     vim.notify("❌ 配置問題: " .. table.concat(issues, ", "), vim.log.levels.ERROR)
     return false
   end
-  
+
   -- 測試 aichat 基本功能
   local test_cmd = 'aichat "測試連接" 2>&1'
   local result = vim.fn.system(test_cmd)
-  
+
   if vim.v.shell_error == 0 then
     vim.notify("✅ aichat 配置測試通過", vim.log.levels.INFO)
     return true
@@ -204,7 +204,7 @@ end
 function M.show_config_status()
   local issues = M.validate_config()
   local status = #issues == 0 and "✅ 正常" or "❌ 有問題"
-  
+
   local report = string.format([[
 🤖 **aichat 配置狀態**
 
@@ -215,7 +215,7 @@ function M.show_config_status()
 可執行: %s
 
 %s
-]], 
+]],
     status,
     M.config_paths.config_dir,
     vim.fn.filereadable(M.config_paths.config_file) == 1 and "✅" or "❌",
@@ -223,7 +223,7 @@ function M.show_config_status()
     vim.fn.executable('aichat') == 1 and "✅" or "❌",
     #issues > 0 and ("問題: " .. table.concat(issues, ", ")) or "所有檢查通過"
   )
-  
+
   vim.notify(report, vim.log.levels.INFO)
 end
 
@@ -233,7 +233,7 @@ function M.reset_config()
     "確定要重置 aichat 配置嗎？這將覆蓋現有配置。",
     "&是\n&否", 2
   )
-  
+
   if choice == 1 then
     M.setup_config(M.plugin_config)
     vim.notify("✅ aichat 配置已重置", vim.log.levels.INFO)
@@ -245,11 +245,11 @@ function M.create_commands()
   vim.api.nvim_create_user_command('AiConfigStatus', function()
     M.show_config_status()
   end, { desc = "顯示 aichat 配置狀態" })
-  
+
   vim.api.nvim_create_user_command('AiConfigTest', function()
     M.test_config()
   end, { desc = "測試 aichat 配置" })
-  
+
   vim.api.nvim_create_user_command('AiConfigReset', function()
     M.reset_config()
   end, { desc = "重置 aichat 配置" })

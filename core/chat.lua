@@ -15,11 +15,11 @@ function M.start_conversation()
     M.focus_chat()
     return
   end
-  
+
   M.create_chat_interface()
   M.chat_state.is_active = true
   M.chat_state.conversation_id = M.generate_conversation_id()
-  
+
   -- 顯示歡迎信息
   M.display_ai_message("🤖 FRIDAY", "您好！我是您的 AI 工作夥伴。有什麼可以協助您的嗎？")
 end
@@ -29,23 +29,23 @@ function M.create_chat_interface()
   -- 創建底部分屏
   vim.cmd('botright split')
   vim.cmd('resize ' .. require('ai-companion').config.ui.chat_height)
-  
+
   -- 創建對話緩衝區
   M.chat_state.chat_buf = vim.api.nvim_create_buf(false, true)
   vim.api.nvim_set_current_buf(M.chat_state.chat_buf)
   M.chat_state.chat_win = vim.api.nvim_get_current_win()
-  
+
   -- 設置緩衝區屬性
   vim.bo[M.chat_state.chat_buf].filetype = 'markdown'
   vim.bo[M.chat_state.chat_buf].buftype = 'nofile'
   vim.bo[M.chat_state.chat_buf].swapfile = false
-  
+
   -- 設置窗口選項
   vim.wo[M.chat_state.chat_win].wrap = true
   vim.wo[M.chat_state.chat_win].linebreak = true
   vim.wo[M.chat_state.chat_win].number = false
   vim.wo[M.chat_state.chat_win].relativenumber = false
-  
+
   -- 設置對話快捷鍵
   M.setup_chat_keymaps()
 end
@@ -53,18 +53,18 @@ end
 -- 對話快捷鍵
 function M.setup_chat_keymaps()
   local opts = { buffer = M.chat_state.chat_buf, silent = true }
-  
+
   -- 發送消息
   vim.keymap.set('n', '<CR>', M.prompt_user_input, opts)
   vim.keymap.set('n', 'i', M.prompt_user_input, opts)
-  
+
   -- 關閉對話
   vim.keymap.set('n', 'q', M.close_chat, opts)
   vim.keymap.set('n', '<Esc>', M.close_chat, opts)
-  
+
   -- 清空對話
   vim.keymap.set('n', '<C-l>', M.clear_chat, opts)
-  
+
   -- 歷史記錄
   vim.keymap.set('n', '<Up>', M.previous_input, opts)
   vim.keymap.set('n', '<Down>', M.next_input, opts)
@@ -86,13 +86,13 @@ end
 function M.handle_user_message(message)
   -- 1. 顯示用戶消息
   M.display_user_message(message)
-  
+
   -- 2. 添加到歷史
   table.insert(M.chat_state.input_history, message)
   if #M.chat_state.input_history > 50 then
     table.remove(M.chat_state.input_history, 1)
   end
-  
+
   -- 3. 處理消息 (異步)
   vim.schedule(function()
     M.process_message_async(message)
@@ -103,7 +103,7 @@ end
 function M.process_message_async(message)
   -- 顯示處理中狀態
   M.display_ai_message("🤖 FRIDAY", "正在思考中...")
-  
+
   -- 意圖識別和處理
   require('ai-companion.core.intent').process_user_message(message, function(response)
     -- 更新最後的 AI 消息
@@ -128,7 +128,7 @@ end
 -- 更新最後的 AI 消息
 function M.update_last_ai_message(new_message)
   local lines = vim.api.nvim_buf_get_lines(M.chat_state.chat_buf, 0, -1, false)
-  
+
   -- 找到最後的 AI 消息並替換
   for i = #lines, 1, -1 do
     if lines[i]:match("^%*%*🤖 FRIDAY%*%*") then
@@ -136,12 +136,12 @@ function M.update_last_ai_message(new_message)
       local timestamp = os.date("%H:%M")
       local formatted = string.format("**🤖 FRIDAY** (%s)\n%s", timestamp, new_message)
       local new_lines = vim.split(formatted, '\n')
-      
+
       vim.api.nvim_buf_set_lines(M.chat_state.chat_buf, i-1, -1, false, new_lines)
       break
     end
   end
-  
+
   M.scroll_to_bottom()
 end
 

@@ -8,7 +8,7 @@
 
 如果你發現了 bug 或有功能建議：
 
-1. 先檢查 [Issues](https://github.com/yingchuan/ai-companion/issues) 確認問題是否已經被報告
+1. 先檢查 Issues 頁面確認問題是否已經被報告
 2. 創建新的 Issue，請包含：
    - 清晰的問題描述
    - 重現步驟

@@ -7,49 +7,49 @@ return {
     -- 從 GitHub 倉庫安裝（推薦）
     -- 如果使用本地開發版本，可以使用：
     -- dir = vim.fn.stdpath("config") .. "/lua/ai-companion",
-    
+
     dependencies = {
       "ibhagwan/fzf-lua",      -- 必需：文件搜索
       "nvim-lua/plenary.nvim", -- 必需：Lua 工具函數
     },
-    
+
     -- 延遲加載，提高啟動速度
     event = "VeryLazy",
-    
+
     -- 插件配置
     opts = {
       -- 工作目錄設置
       workspace_dir = "~/workspace", -- 可自定義路徑
-      
+
       -- AI 模型配置
       ai_config = {
         -- 使用 OpenAI 的 embedding 模型（推薦）
         embedding_model = "openai:text-embedding-3-small",
-        
+
         -- 主生成模型（可選擇以下之一）
         generation_model = "claude-3-5-sonnet",           -- Anthropic Claude（推薦）
         -- generation_model = "openai:gpt-4",             -- OpenAI GPT-4
         -- generation_model = "openai:gpt-3.5-turbo",     -- OpenAI GPT-3.5（經濟選擇）
-        
+
         temperature = 0.7,      -- 創意度（0-2）
         max_tokens = 4000,      -- 最大回應長度
         timeout = 30000,        -- 超時時間（毫秒）
       },
-      
+
       -- Git 整合設置
       git_integration = {
         enabled = true,         -- 啟用 Git 整合
         auto_hooks = true,      -- 自動安裝 Git hooks
         auto_commit = false,    -- 不自動提交（建議手動控制）
       },
-      
+
       -- 用戶界面設置
       ui = {
         chat_height = 15,       -- 對話窗口高度
         auto_focus = true,      -- 自動聚焦到對話窗口
         show_timestamps = true, -- 顯示時間戳
       },
-      
+
       -- 文件組織設置
       file_organization = {
         auto_categorize = true,    -- 自動分類
@@ -57,7 +57,7 @@ return {
         use_subdirectories = true, -- 使用子目錄組織
         max_files_per_dir = 100,   -- 每目錄最大文件數
       },
-      
+
       -- 搜索配置
       search = {
         fuzzy_threshold = 0.8,  -- 模糊搜索閾值
@@ -65,7 +65,7 @@ return {
         include_archived = false, -- 不包含歸檔文件
         search_in_content = true, -- 搜索文件內容
       },
-      
+
       -- 通知設置
       notifications = {
         enabled = true,
@@ -74,7 +74,7 @@ return {
         show_errors = true,
         auto_hide_delay = 3000, -- 3秒後自動隱藏
       },
-      
+
       -- 性能設置
       performance = {
         async_processing = true,      -- 異步處理
@@ -85,23 +85,23 @@ return {
         rag_overlap = 200,            -- RAG 重疊大小
       },
     },
-    
+
     -- 設置函數
     config = function(_, opts)
       require('ai-companion').setup(opts)
-      
+
       -- 可選：自定義快捷鍵
       vim.keymap.set('n', '<leader>ac', function()
         require('ai-companion.core.chat').start_conversation()
       end, { desc = "AI 對話" })
-      
+
       vim.keymap.set('n', '<leader>an', function()
         require('ai-companion.core.chat').start_conversation()
         vim.defer_fn(function()
           vim.fn.feedkeys('i記錄筆記：')
         end, 100)
       end, { desc = "快速筆記" })
-      
+
       vim.keymap.set('n', '<leader>at', function()
         require('ai-companion.core.chat').start_conversation()
         vim.defer_fn(function()
@@ -110,7 +110,7 @@ return {
       end, { desc = "快速任務" })
     end,
   },
-  
+
   -- 可選：為不同工作流程創建預設配置
   {
     "yingchuan/ai-companion",
@@ -128,9 +128,9 @@ return {
       })
     end,
   },
-  
+
   {
-    "yingchuan/ai-companion", 
+    "yingchuan/ai-companion",
     name = "ai-companion-dev", -- 開發工作流
     enabled = false, -- 默認禁用，需要時啟用
     opts = function()
@@ -167,7 +167,7 @@ return {
 
 默認快捷鍵：
 - <leader><space>  開始 AI 對話
-- <leader>fn       搜索工作文件  
+- <leader>fn       搜索工作文件
 - <leader>sn       搜索工作內容
 
 對話窗口內：

@@ -6,7 +6,8 @@
       "Bash(git push:*)",
       "Bash(command -v:*)",
       "Bash(/dev/null)",
-      "Bash(luacheck:*)"
+      "Bash(luacheck:*)",
+      "Bash(gh api:*)"
     ],
     "deny": []
   }
