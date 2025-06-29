@@ -9,7 +9,8 @@
       "Bash(luacheck:*)",
       "Bash(gh api:*)",
       "Bash(awk:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(sed:*)"
     ],
     "deny": []
   }
