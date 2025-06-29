@@ -153,7 +153,7 @@ function M.check_hooks_status()
     local stat = vim.uv.fs_stat(hook_path)
     if stat and stat.mode then
       -- 檢查執行權限 (owner execute bit)
-      status.executable = (stat.mode & 64) ~= 0
+      status.executable = (bit.band(stat.mode, 64) ~= 0)
     end
 
     -- 檢查是否為 AI companion 生成的
