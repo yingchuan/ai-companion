@@ -65,6 +65,8 @@ clients:
         max_tokens: 128000
       - name: o1-mini-high
         max_tokens: 65536
+      - name: o3-mini-high
+        max_tokens: 200000
       - name: text-embedding-3-small
         type: embedding
       - name: text-embedding-3-large
