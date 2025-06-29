@@ -51,6 +51,34 @@ highlight: true
 light_theme: false
 temperature: %s
 
+# 客戶端配置 - 必需配置
+clients:
+  # OpenAI 配置
+  - type: openai
+    api_key: # 請設置環境變量 OPENAI_API_KEY
+    models:
+      - name: gpt-3.5-turbo
+        max_tokens: 4096
+      - name: gpt-4
+        max_tokens: 8192
+      - name: gpt-4-turbo
+        max_tokens: 128000
+      - name: text-embedding-3-small
+        type: embedding
+      - name: text-embedding-3-large
+        type: embedding
+
+  # Anthropic 配置
+  - type: claude
+    api_key: # 請設置環境變量 ANTHROPIC_API_KEY
+    models:
+      - name: claude-3-5-sonnet-20241022
+        max_tokens: 8192
+      - name: claude-3-5-haiku-20241022
+        max_tokens: 8192
+      - name: claude-sonnet-4-20250514
+        max_tokens: 8192
+
 # RAG 配置
 rag_embedding_model: %s
 rag_top_k: 4
@@ -187,15 +215,36 @@ function M.test_config()
     return false
   end
 
+  -- 檢查環境變量
+  local env_issues = {}
+  if not vim.env.OPENAI_API_KEY and not vim.env.ANTHROPIC_API_KEY then
+    table.insert(env_issues, "未設置 API 密鑰環境變量")
+  end
+
+  -- 測試 aichat 列出模型
+  local list_models_cmd = 'aichat --list-models 2>&1'
+  local models_result = vim.fn.system(list_models_cmd)
+
+  if vim.v.shell_error ~= 0 or models_result:match("^%s*$") then
+    vim.notify("❌ aichat 無法列出模型，可能配置有誤:\n" .. models_result, vim.log.levels.ERROR)
+    if #env_issues > 0 then
+      vim.notify("💡 提示: " .. table.concat(env_issues, ", "), vim.log.levels.WARN)
+    end
+    return false
+  end
+
   -- 測試 aichat 基本功能
-  local test_cmd = 'aichat "測試連接" 2>&1'
+  local test_cmd = 'aichat --role companion "簡單測試連接" 2>&1'
   local result = vim.fn.system(test_cmd)
 
   if vim.v.shell_error == 0 then
-    vim.notify("✅ aichat 配置測試通過", vim.log.levels.INFO)
+    vim.notify("✅ aichat 配置測試通過\n可用模型:\n" .. models_result, vim.log.levels.INFO)
     return true
   else
     vim.notify("❌ aichat 測試失敗: " .. result, vim.log.levels.ERROR)
+    if #env_issues > 0 then
+      vim.notify("💡 提示: " .. table.concat(env_issues, ", "), vim.log.levels.WARN)
+    end
     return false
   end
 end

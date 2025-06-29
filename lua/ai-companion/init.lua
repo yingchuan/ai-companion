@@ -6,7 +6,7 @@ M.defaults = {
   workspace_dir = "~/workspace",
   ai_config = {
     embedding_model = "openai:text-embedding-3-small",
-    generation_model = "claude-3-5-sonnet",
+    generation_model = "claude-sonnet-4-20250514",
     temperature = 0.7,
   },
   git_integration = {
@@ -16,7 +16,7 @@ M.defaults = {
   ui = {
     chat_height = 15,
     auto_focus = true,
-  }
+  },
 }
 
 -- 主設置函數
@@ -28,38 +28,38 @@ function M.setup(opts)
   M.validate_config()
 
   -- 3. 初始化子模塊
-  require('ai-companion.core.ai').setup(M.config.ai_config)
-  require('ai-companion.utils.aichat').setup_config(M.config)
+  require("ai-companion.core.ai").setup(M.config.ai_config)
+  require("ai-companion.utils.aichat").setup_config(M.config)
 
   -- 4. 設置快捷鍵
   M.setup_keymaps()
 
   -- 5. 設置 Git 整合
   if M.config.git_integration.enabled then
-    require('ai-companion.utils.git').setup(M.config.workspace_dir)
+    require("ai-companion.utils.git").setup(M.config.workspace_dir)
   end
 
   -- 6. 創建用戶命令
   M.create_user_commands()
 
   -- 7. 創建輔助工具命令
-  require('ai-companion.utils.git').create_commands()
-  require('ai-companion.utils.aichat').create_commands()
+  require("ai-companion.utils.git").create_commands()
+  require("ai-companion.utils.aichat").create_commands()
 end
 
 -- 快捷鍵設置
 function M.setup_keymaps()
-  vim.keymap.set('n', '<leader><space>', function()
-    require('ai-companion.core.chat').start_conversation()
+  vim.keymap.set("n", "<leader><space>", function()
+    require("ai-companion.core.chat").start_conversation()
   end, { desc = "與 AI 對話" })
 
   -- 可選的傳統搜索快捷鍵
-  vim.keymap.set('n', '<leader>fn', function()
-    require('fzf-lua').files({ cwd = vim.fn.expand(M.config.workspace_dir) })
+  vim.keymap.set("n", "<leader>fn", function()
+    require("fzf-lua").files({ cwd = vim.fn.expand(M.config.workspace_dir) })
   end, { desc = "搜索工作文件" })
 
-  vim.keymap.set('n', '<leader>sn', function()
-    require('fzf-lua').live_grep({ cwd = vim.fn.expand(M.config.workspace_dir) })
+  vim.keymap.set("n", "<leader>sn", function()
+    require("fzf-lua").live_grep({ cwd = vim.fn.expand(M.config.workspace_dir) })
   end, { desc = "搜索工作內容" })
 end
 
@@ -72,19 +72,19 @@ function M.validate_config()
   end
 
   -- 檢查 aichat 可用性
-  if vim.fn.executable('aichat') == 0 then
+  if vim.fn.executable("aichat") == 0 then
     vim.notify("警告: aichat 未找到，請先安裝", vim.log.levels.WARN)
   end
 end
 
 -- 用戶命令
 function M.create_user_commands()
-  vim.api.nvim_create_user_command('AiChat', function()
-    require('ai-companion.core.chat').start_conversation()
+  vim.api.nvim_create_user_command("AiChat", function()
+    require("ai-companion.core.chat").start_conversation()
   end, { desc = "開始 AI 對話" })
 
-  vim.api.nvim_create_user_command('AiStatus', function()
-    require('ai-companion.core.ai').show_status()
+  vim.api.nvim_create_user_command("AiStatus", function()
+    require("ai-companion.core.ai").show_status()
   end, { desc = "顯示 AI 狀態" })
 end
 

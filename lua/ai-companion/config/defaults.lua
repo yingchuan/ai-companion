@@ -8,7 +8,7 @@ M.plugin_defaults = {
   -- AI 配置
   ai_config = {
     embedding_model = "openai:text-embedding-3-small",
-    generation_model = "claude-3-5-sonnet",
+    generation_model = "claude-sonnet-4-20250514",
     temperature = 0.7,
     max_tokens = 4000,
     timeout = 30000, -- 30 秒超時
@@ -81,7 +81,7 @@ M.model_presets = {
   -- Anthropic 配置
   anthropic = {
     embedding_model = "openai:text-embedding-3-small", -- Anthropic 沒有 embedding 模型
-    generation_model = "claude-3-5-sonnet",
+    generation_model = "claude-sonnet-4-20250514",
     temperature = 0.7,
     max_tokens = 4000,
   },
@@ -97,7 +97,7 @@ M.model_presets = {
   -- 混合配置（OpenAI embedding + Anthropic generation）
   hybrid = {
     embedding_model = "openai:text-embedding-3-small",
-    generation_model = "claude-3-5-sonnet",
+    generation_model = "claude-sonnet-4-20250514",
     temperature = 0.7,
     max_tokens = 4000,
   },
@@ -119,13 +119,16 @@ M.workflow_templates = {
       "reviews/quarterly",
     },
     auto_tags = {
-      "#development", "#project", "#learning", "#meeting"
+      "#development",
+      "#project",
+      "#learning",
+      "#meeting",
     },
     file_naming = {
       tasks = "task-{date}-{id}",
       meetings = "meeting-{date}-{topic}",
       notes = "note-{date}-{category}",
-    }
+    },
   },
 
   -- 研究工作流
@@ -141,13 +144,16 @@ M.workflow_templates = {
       "reviews/progress",
     },
     auto_tags = {
-      "#research", "#experiment", "#paper", "#idea"
+      "#research",
+      "#experiment",
+      "#paper",
+      "#idea",
     },
     file_naming = {
       papers = "paper-{date}-{title}",
       experiments = "exp-{date}-{id}",
       ideas = "idea-{date}-{topic}",
-    }
+    },
   },
 
   -- 通用工作流
@@ -160,13 +166,15 @@ M.workflow_templates = {
       "reviews",
     },
     auto_tags = {
-      "#work", "#personal", "#important"
+      "#work",
+      "#personal",
+      "#important",
     },
     file_naming = {
       tasks = "{date}-task-{id}",
       meetings = "{date}-meeting",
       notes = "{date}-note",
-    }
+    },
   },
 }
 
@@ -235,7 +243,7 @@ M.validation_rules = {
     required = true,
     validator = function(value)
       return value and value ~= ""
-    end
+    end,
   },
 
   ai_config = {
@@ -249,9 +257,9 @@ M.validation_rules = {
         required = false,
         validator = function(value)
           return value >= 0 and value <= 2
-        end
+        end,
       },
-    }
+    },
   },
 
   ui = {
@@ -262,15 +270,15 @@ M.validation_rules = {
         type = "number",
         validator = function(value)
           return value > 5 and value < 50
-        end
+        end,
       },
       chat_width = {
         type = "number",
         validator = function(value)
           return value > 40 and value < 200
-        end
+        end,
       },
-    }
+    },
   },
 }
 
