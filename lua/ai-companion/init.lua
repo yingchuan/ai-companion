@@ -6,7 +6,7 @@ M.defaults = {
   workspace_dir = "~/workspace",
   ai_config = {
     embedding_model = "openai:text-embedding-3-small",
-    generation_model = "claude-sonnet-4-20250514",
+    generation_model = "openai:o1-mini-high",
     temperature = 0.7,
   },
   git_integration = {

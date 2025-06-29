@@ -8,7 +8,7 @@ M.plugin_defaults = {
   -- AI 配置
   ai_config = {
     embedding_model = "openai:text-embedding-3-small",
-    generation_model = "claude-sonnet-4-20250514",
+    generation_model = "openai:o1-mini-high",
     temperature = 0.7,
     max_tokens = 4000,
     timeout = 30000, -- 30 秒超時
@@ -73,7 +73,7 @@ M.model_presets = {
   -- OpenAI 配置
   openai = {
     embedding_model = "openai:text-embedding-3-small",
-    generation_model = "openai:gpt-4",
+    generation_model = "openai:o1-mini-high",
     temperature = 0.7,
     max_tokens = 4000,
   },
@@ -94,10 +94,10 @@ M.model_presets = {
     max_tokens = 2000,
   },
 
-  -- 混合配置（OpenAI embedding + Anthropic generation）
+  -- 混合配置（OpenAI embedding + o1-mini-high generation）
   hybrid = {
     embedding_model = "openai:text-embedding-3-small",
-    generation_model = "claude-sonnet-4-20250514",
+    generation_model = "openai:o1-mini-high",
     temperature = 0.7,
     max_tokens = 4000,
   },

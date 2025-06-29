@@ -63,6 +63,8 @@ clients:
         max_tokens: 8192
       - name: gpt-4-turbo
         max_tokens: 128000
+      - name: o1-mini-high
+        max_tokens: 65536
       - name: text-embedding-3-small
         type: embedding
       - name: text-embedding-3-large

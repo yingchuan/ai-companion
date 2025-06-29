@@ -55,7 +55,7 @@ return {
       workspace_dir = "~/workspace",
       ai_config = {
         embedding_model = "openai:text-embedding-3-small",
-        generation_model = "claude-3-5-sonnet",
+        generation_model = "openai:o1-mini-high",
         temperature = 0.7,
       },
     },
@@ -148,7 +148,7 @@ require('ai-companion').setup({
   -- AI 配置
   ai_config = {
     embedding_model = "openai:text-embedding-3-small",
-    generation_model = "claude-3-5-sonnet",
+    generation_model = "openai:o1-mini-high",
     temperature = 0.7,
     max_tokens = 4000,
     timeout = 30000,
