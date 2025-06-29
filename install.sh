@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # AI 工作夥伴插件安裝腳本
-# 用法: curl -sSL https://raw.githubusercontent.com/your-repo/ai-companion.nvim/main/install.sh | bash
+# 用法: curl -sSL https://raw.githubusercontent.com/yingchuan/ai-companion/main/install.sh | bash
 
 set -e
 
@@ -127,31 +127,14 @@ install_plugin() {
     # 下載插件文件（這裡假設從 GitHub 下載）
     print_info "下載插件文件..."
     
-    # 如果有 Git 倉庫，可以直接 clone
-    # git clone https://github.com/your-username/ai-companion.nvim.git "$plugin_dir"
+    # 從 GitHub 倉庫克隆
+    if [[ ! -d "$plugin_dir/.git" ]]; then
+      git clone https://github.com/yingchuan/ai-companion.git "$plugin_dir"
+      print_success "插件已下載到 $plugin_dir"
+    else
+      print_success "插件目錄已存在，跳過下載"
+    fi
     
-    # 或者下載單個文件
-    local files=(
-        "init.lua"
-        "core/chat.lua"
-        "core/ai.lua"  
-        "core/intent.lua"
-        "core/content.lua"
-        "templates/prompts.lua"
-        "utils/git.lua"
-        "utils/aichat.lua"
-        "utils/helpers.lua"
-        "config/defaults.lua"
-    )
-    
-    for file in "${files[@]}"; do
-        local dir_path=$(dirname "$plugin_dir/$file")
-        mkdir -p "$dir_path"
-        
-        # 這裡應該從實際的倉庫 URL 下載
-        # curl -sSL "https://raw.githubusercontent.com/your-repo/ai-companion.nvim/main/$file" -o "$plugin_dir/$file"
-        print_info "需要手動複製文件: $file"
-    done
     
     # 創建插件配置文件
     local config_file="$plugins_dir/ai-companion.lua"
@@ -161,8 +144,7 @@ install_plugin() {
 -- AI 工作夥伴插件配置
 return {
   {
-    "ai-companion.nvim",
-    dir = vim.fn.stdpath("config") .. "/lua/ai-companion",
+    "yingchuan/ai-companion",
     dependencies = {
       "ibhagwan/fzf-lua",
       "nvim-lua/plenary.nvim",

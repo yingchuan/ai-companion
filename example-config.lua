@@ -3,13 +3,10 @@
 
 return {
   {
-    "ai-companion.nvim",
-    -- 如果使用本地開發版本，指定本地路徑
-    dir = vim.fn.stdpath("config") .. "/lua/ai-companion",
-    
-    -- 如果從 Git 倉庫安裝，使用以下配置
-    -- url = "https://github.com/your-username/ai-companion.nvim",
-    -- branch = "main",
+    "yingchuan/ai-companion",
+    -- 從 GitHub 倉庫安裝（推薦）
+    -- 如果使用本地開發版本，可以使用：
+    -- dir = vim.fn.stdpath("config") .. "/lua/ai-companion",
     
     dependencies = {
       "ibhagwan/fzf-lua",      -- 必需：文件搜索
@@ -116,9 +113,8 @@ return {
   
   -- 可選：為不同工作流程創建預設配置
   {
-    "ai-companion.nvim",
+    "yingchuan/ai-companion",
     name = "ai-companion-research", -- 研究工作流
-    dir = vim.fn.stdpath("config") .. "/lua/ai-companion",
     enabled = false, -- 默認禁用，需要時啟用
     opts = function()
       local defaults = require('ai-companion.config.defaults')
@@ -134,9 +130,8 @@ return {
   },
   
   {
-    "ai-companion.nvim", 
+    "yingchuan/ai-companion", 
     name = "ai-companion-dev", -- 開發工作流
-    dir = vim.fn.stdpath("config") .. "/lua/ai-companion",
     enabled = false, -- 默認禁用，需要時啟用
     opts = function()
       local defaults = require('ai-companion.config.defaults')

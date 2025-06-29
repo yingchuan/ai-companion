@@ -38,14 +38,15 @@ export ANTHROPIC_API_KEY="your-anthropic-api-key"
 
 ### 安裝插件
 
+#### 方法一：使用 Git 倉庫（推薦）
+
 在你的 LazyVim 配置中添加：
 
 ```lua
 -- ~/.config/nvim/lua/plugins/ai-companion.lua
 return {
   {
-    "ai-companion.nvim",
-    dir = vim.fn.stdpath("config") .. "/lua/ai-companion", -- 本地路徑
+    "yingchuan/ai-companion",
     dependencies = {
       "ibhagwan/fzf-lua",
       "nvim-lua/plenary.nvim",
@@ -65,6 +66,16 @@ return {
     event = "VeryLazy",
   }
 }
+```
+
+#### 方法二：使用安裝腳本
+
+```bash
+# 自動安裝（推薦）
+curl -sSL https://raw.githubusercontent.com/yingchuan/ai-companion/main/install.sh | bash
+
+# 或手動克隆到 Neovim 配置目錄
+git clone https://github.com/yingchuan/ai-companion.git ~/.config/nvim/lua/ai-companion
 ```
 
 ## 💬 使用方法
