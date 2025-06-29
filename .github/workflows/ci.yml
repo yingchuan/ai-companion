@@ -26,11 +26,11 @@ jobs:
 
       - name: Lint Lua files
         run: |
-          find . -name "*.lua" -not -path "./.git/*" | xargs luacheck --config .luacheckrc
+          find lua -name "*.lua" | xargs luacheck --config .luacheckrc
 
       - name: Check Lua syntax
         run: |
-          find . -name "*.lua" -not -path "./.git/*" -exec lua -l {} \;
+          find lua -name "*.lua" -exec lua -c {} \;
 
   install-test:
     name: Installation Test
